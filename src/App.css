@@ -1,0 +1,201 @@
+:root {
+    --naranja-corp: #FF5722;
+    --naranja-suave: #ffe0b2;
+    --negro: #212121;
+    --blanco: #ffffff;
+    --gris-texto: #444;
+}
+
+/* RESET */
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, sans-serif; }
+
+/* MODIFICACIÓN CLAVE: scroll-padding-top evita que el título se oculte tras el nav fijo */
+html { 
+    scroll-behavior: smooth; 
+    scroll-padding-top: 120px; 
+}
+
+html, body, #root {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+}
+
+#root {
+    background: radial-gradient(circle at top, var(--naranja-suave) 0%, #ffffff 70%);
+    background-attachment: fixed;
+}
+
+body { 
+    color: var(--negro);
+    line-height: 1.6;
+    font-size: 18px;
+}
+
+/* --- NAVEGACIÓN --- */
+nav {
+    background: var(--blanco);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 5%;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+.logo-box img { height: 60px; cursor: pointer; } 
+
+.menu { 
+    display: flex; 
+    align-items: center; 
+    gap: 20px; 
+}
+.menu a { text-decoration: none; color: var(--negro); font-weight: bold; font-size: 0.95rem; }
+
+.btn-nav { 
+    text-align: center; 
+    padding: 10px 16px; 
+    border-radius: 8px; 
+    min-width: 145px; 
+    line-height: 1.2; 
+    font-size: 0.9rem; 
+    display: inline-block; 
+    text-decoration: none; 
+    transition: 0.3s; 
+}
+.btn-solicitar-nav { border: 2px solid var(--naranja-corp); color: var(--naranja-corp) !important; }
+.btn-despacho-nav { background: var(--naranja-corp); color: var(--blanco) !important; }
+
+/* --- HERO --- */
+.hero { 
+    text-align: center; 
+    min-height: 80vh; 
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 30px 20px;
+}
+.hero h1 { font-size: 4.2rem; font-weight: 800; margin-bottom: 8px; }
+.hero p { color: #666; font-size: 1.5rem; margin-bottom: 35px; }
+
+.skyline-box { 
+    max-width: 1050px; 
+    margin: 0 auto; 
+    background: white; 
+    padding: 25px; 
+    border-radius: 25px; 
+    box-shadow: 0 15px 50px rgba(0,0,0,0.12);
+}
+.skyline-box img { width: 100%; height: auto; display: block; border-radius: 12px; }
+
+/* --- SECCIONES --- */
+.container { max-width: 1150px; margin: auto; padding: 20px; text-align: left; }
+
+section { background: var(--blanco); border-radius: 20px; padding: 40px; margin-bottom: 50px; box-shadow: 0 5px 25px rgba(0,0,0,0.05); }
+.titulo-seccion { color: var(--naranja-corp); margin-bottom: 25px; border-bottom: 3px solid var(--naranja-corp); display: inline-block; text-transform: uppercase; font-weight: bold; font-size: 2rem; }
+
+/* --- CONTACTO --- */
+.contacto-grid { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 30px; }
+.info-columna { display: flex; flex-direction: column; gap: 15px; }
+
+.caja-info-naranja { 
+    background: var(--naranja-suave); 
+    padding: 20px; 
+    border-radius: 15px; 
+}
+.caja-info-naranja p {
+    margin-bottom: 12px;
+    font-weight: 600;
+    display: flex; 
+    align-items: flex-start;
+}
+.caja-info-naranja i {
+    color: var(--naranja-corp);
+    margin-right: 15px; 
+    width: 20px;
+    text-align: center;
+    flex-shrink: 0; 
+    margin-top: 5px; 
+}
+
+.mapa-box { width: 100%; height: 300px; border-radius: 15px; overflow: hidden; border: 2px solid var(--naranja-corp); }
+
+/* --- OTROS --- */
+.btn-portal-solido { background: var(--naranja-corp); color: white !important; font-weight: bold; font-size: 1.3rem; padding: 15px 40px; border-radius: 12px; display: inline-block; transition: 0.3s; box-shadow: 0 5px 15px rgba(255, 87, 34, 0.3); text-transform: uppercase; border: none; cursor: pointer; }
+
+.whatsapp-float { position: fixed; bottom: 30px; right: 30px; background: #25d366; color: white; width: 65px; height: 65px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 35px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); z-index: 2000; text-decoration: none; }
+
+footer { text-align: center; padding: 60px 20px; background: #212121; color: white; width: 100%; }
+.laurel { height: 100px; background: white; padding: 10px; border-radius: 10px; margin-bottom: 15px; }
+
+/* APOYO */
+.franja-discreta { display: flex; justify-content: space-around; padding: 20px 0 40px 0; text-align: center; }
+.stat-discreta i { color: var(--naranja-corp); font-size: 1.8rem; margin-bottom: 5px; display: block; }
+.stat-discreta h4 { font-size: 2.2rem; font-weight: 800; color: var(--negro); }
+.stat-discreta p { font-size: 0.8rem; text-transform: uppercase; color: var(--gris-texto); font-weight: 700; }
+.excelencia-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; margin-bottom: 60px; }
+.tarjeta-excelencia { background: var(--blanco); padding: 35px; border-radius: 20px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.05); border: 1px solid #f0f0f0; }
+.tarjeta-excelencia i { color: var(--naranja-corp); font-size: 2.5rem; margin-bottom: 15px; display: block; }
+.tarjeta-excelencia h3 { text-transform: uppercase; margin-bottom: 10px; font-size: 1.2rem; }
+.servicios-container { display: flex; flex-direction: column; gap: 15px; }
+.servicio-item { background: #f8f9fa; border-radius: 12px; border: 1px solid rgba(0,0,0,0.05); }
+.servicio-header { padding: 20px 25px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-weight: bold; }
+.icon-plus { color: var(--naranja-corp); font-weight: bold; font-size: 1.3rem; }
+.servicio-content { max-height: 0; overflow: hidden; transition: 0.4s ease-out; background: var(--blanco); }
+.servicio-content div { padding: 20px 25px; text-align: justify; border-top: 1px solid #eee; font-size: 1rem; }
+.form-presupuesto { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+.full { grid-column: span 2; }
+input, select, textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 1rem; }
+.subtitulo-form { grid-column: span 2; background: #f8f8f8; padding: 10px; border-left: 5px solid var(--naranja-corp); font-weight: bold; margin-top: 10px; }
+.instrucciones-card { background: var(--blanco); padding: 40px; border-radius: 20px; box-shadow: 0 5px 25px rgba(0,0,0,0.05); text-align: left; }
+
+/* ============================================================
+   ESTILOS MÓVIL (CORREGIDOS PARA EVITAR CORTES EN TÍTULOS)
+   ============================================================ */
+@media (max-width: 950px) {
+    /* Ajuste de anclaje para móvil para dar más espacio */
+    html { 
+        scroll-padding-top: 180px; 
+    }
+
+    nav { 
+        flex-direction: column; 
+        gap: 15px; 
+        padding-bottom: 15px;
+    }
+    
+    .menu { 
+        flex-wrap: wrap; 
+        justify-content: center;
+        gap: 10px; 
+        width: 100%;
+    }
+    
+    .menu a {
+        font-size: 0.9rem;
+    }
+
+    .btn-nav { 
+        min-width: 130px; 
+        font-size: 0.85rem;
+    }
+
+    .hero h1 { font-size: 2.8rem; }
+    .hero p { font-size: 1.2rem; }
+    
+    .skyline-box { max-width: 95%; }
+
+    /* Añadimos margen superior a las secciones en móvil para que no se peguen al nav */
+    section {
+        margin-top: 20px;
+        padding: 30px 20px;
+    }
+
+    .contacto-grid, .form-presupuesto, .excelencia-grid, .franja-discreta { 
+        grid-template-columns: 1fr; 
+    }
+    
+    .full { grid-column: span 1; }
+}

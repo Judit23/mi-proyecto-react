@@ -1,13 +1,84 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import './App.css';
 // 1. IMPORTAMOS FIREBASE (Asegúrate de haber creado el archivo firebase.js)
-import { db } from './firebase'; 
+import { db } from './firebase';
 import { collection, addDoc } from "firebase/firestore";
+
+function useReveal() {
+  useEffect(() => {
+    const els = document.querySelectorAll('.reveal');
+    if (!('IntersectionObserver' in window) || els.length === 0) {
+      els.forEach((el) => el.classList.add('is-visible'));
+      return;
+    }
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+    els.forEach((el) => io.observe(el));
+    return () => io.disconnect();
+  }, []);
+}
+
+function useNavScrolled() {
+  useEffect(() => {
+    const nav = document.querySelector('nav');
+    if (!nav) return;
+    const onScroll = () => {
+      if (window.scrollY > 30) nav.classList.add('scrolled');
+      else nav.classList.remove('scrolled');
+    };
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+}
+
+function CountUp({ end, suffix = '', duration = 1400 }) {
+  const [val, setVal] = useState(0);
+  const ref = useRef(null);
+  const started = useRef(false);
+
+  useEffect(() => {
+    if (!ref.current) return;
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduce) {
+      setVal(end);
+      return;
+    }
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => {
+        if (e.isIntersecting && !started.current) {
+          started.current = true;
+          const start = performance.now();
+          const tick = (now) => {
+            const t = Math.min(1, (now - start) / duration);
+            const eased = 1 - Math.pow(1 - t, 3);
+            setVal(Math.round(end * eased));
+            if (t < 1) requestAnimationFrame(tick);
+          };
+          requestAnimationFrame(tick);
+        }
+      });
+    }, { threshold: 0.5 });
+    io.observe(ref.current);
+    return () => io.disconnect();
+  }, [end, duration]);
+
+  return <span ref={ref}>{val}{suffix}</span>;
+}
 
 function App() {
   // Lógica para el acordeón de servicios
   const [activeIdx, setActiveIdx] = useState(null);
   const toggleAcc = (idx) => setActiveIdx(activeIdx === idx ? null : idx);
+
+  useReveal();
+  useNavScrolled();
 
   // --- LÓGICA DE FIREBASE ---
   // Estado para capturar todos los campos del formulario
@@ -57,7 +128,7 @@ function App() {
   return (
     <div className="App">
       {/* WHATSAPP */}
-      <a href="https://wa.me/34615864610" className="whatsapp-float" target="_blank" rel="noreferrer"><i className="fab fa-whatsapp"></i></a>
+      <a href="https://wa.me/34615864610" className="whatsapp-float" target="_blank" rel="noreferrer" aria-label="Contactar por WhatsApp"><i className="fab fa-whatsapp"></i></a>
 
       {/* NAVEGACIÓN */}
       <nav>
@@ -83,7 +154,7 @@ function App() {
 
       <div className="container">
         {/* NOSOTROS */}
-        <section id="nosotros">
+        <section id="nosotros" className="reveal">
           <h2 className="titulo-seccion">Quiénes Somos</h2>
           <p>Treinta y cinco años de experiencia en la gestión de las Comunidades de Propietarios de Canarias avalan una calidad de servicios que muy pocos podrán ofrecerle, realizando con éxito cuanto nos proponemos para asegurar la buena convivencia en las Comunidades que administramos y la óptima conservación de los inmuebles y sus elementos.</p>
           <br/>
@@ -91,27 +162,27 @@ function App() {
         </section>
 
         {/* FRANJA INDICADORES */}
-        <div className="franja-discreta">
-          <div className="stat-discreta"><i className="fas fa-award"></i><h4>35+</h4><p>Años de trayectoria</p></div>
-          <div className="stat-discreta"><i className="fas fa-shield-alt"></i><h4>700k€</h4><p>Seguro Resp. Civil</p></div>
+        <div className="franja-discreta reveal">
+          <div className="stat-discreta"><i className="fas fa-award"></i><h4><CountUp end={35} suffix="+" /></h4><p>Años de trayectoria</p></div>
+          <div className="stat-discreta"><i className="fas fa-shield-alt"></i><h4><CountUp end={700} suffix="k€" /></h4><p>Seguro Resp. Civil</p></div>
           <div className="stat-discreta"><i className="fas fa-user-check"></i><h4>24/7</h4><p>Despacho Virtual</p></div>
         </div>
 
         {/* EXCELENCIA */}
         <div className="excelencia-grid">
-          <div className="tarjeta-excelencia"><i className="fas fa-handshake"></i><h3>Transparencia</h3><p>Cuentas claras y auditables en tiempo real desde su despacho virtual 24/7.</p></div>
-          <div className="tarjeta-excelencia"><i className="fas fa-tools"></i><h3>Rapidez</h3><p>Atención inmediata a averías con proveedores técnicos homologados de total confianza.</p></div>
-          <div className="tarjeta-excelencia"><i className="fas fa-users"></i><h3>Mediación</h3><p>Expertos en resolución de conflictos para garantizar una convivencia armoniosa.</p></div>
+          <div className="tarjeta-excelencia reveal reveal-delay-1"><i className="fas fa-handshake"></i><h3>Transparencia</h3><p>Cuentas claras y auditables en tiempo real desde su despacho virtual 24/7.</p></div>
+          <div className="tarjeta-excelencia reveal reveal-delay-2"><i className="fas fa-tools"></i><h3>Rapidez</h3><p>Atención inmediata a averías con proveedores técnicos homologados de total confianza.</p></div>
+          <div className="tarjeta-excelencia reveal reveal-delay-3"><i className="fas fa-users"></i><h3>Mediación</h3><p>Expertos en resolución de conflictos para garantizar una convivencia armoniosa.</p></div>
         </div>
 
         {/* SERVICIOS */}
-        <section id="servicios">
+        <section id="servicios" className="reveal">
           <h2 className="titulo-seccion">Nuestros Servicios</h2>
           <div className="servicios-container">
             {servicios.map((s, i) => (
-              <div className="servicio-item" key={i}>
+              <div className={`servicio-item ${activeIdx === i ? 'is-open' : ''}`} key={i}>
                 <div className="servicio-header" onClick={() => toggleAcc(i)}>
-                  <span>{s.t}</span><span className="icon-plus">{activeIdx === i ? '-' : '+'}</span>
+                  <span>{s.t}</span><span className="icon-plus">{activeIdx === i ? '−' : '+'}</span>
                 </div>
                 <div className="servicio-content" style={{ maxHeight: activeIdx === i ? '500px' : '0' }}>
                   <div>{s.c}</div>
@@ -122,7 +193,7 @@ function App() {
         </section>
 
         {/* PRESUPUESTO */}
-        <section id="solicitar">
+        <section id="solicitar" className="reveal">
           <h2 className="titulo-seccion">Solicitar Presupuesto</h2>
           {/* CAMBIO: Quitamos action mailto y añadimos onSubmit */}
           <form onSubmit={manejarEnvioPresupuesto} className="form-presupuesto">
@@ -132,7 +203,7 @@ function App() {
             <input type="email" placeholder="Email" name="Email" onChange={handleChange} required/>
             <input type="text" placeholder="Nombre de la Comunidad" className="full" name="Comunidad" onChange={handleChange}/>
             <input type="text" placeholder="Dirección de la comunidad" className="full" name="Direccion" onChange={handleChange}/>
-            
+
             <div className="subtitulo-form">2. DETALLES DE LA EDIFICACIÓN</div>
             <input type="number" placeholder="Número de locales" name="Locales" onChange={handleChange}/>
             <input type="number" placeholder="Número de viviendas" name="Viviendas" onChange={handleChange}/>
@@ -167,7 +238,7 @@ function App() {
         </section>
 
         {/* DESPACHO VIRTUAL */}
-        <div id="despacho" style={{textAlign: 'center', marginBottom: '100px'}}>
+        <div id="despacho" className="reveal" style={{textAlign: 'center', marginBottom: '100px'}}>
           <h2 className="titulo-seccion" style={{borderBottom:'none', marginBottom: '5px'}}>ACCESO A DESPACHO VIRTUAL</h2>
           <div style={{width: '50px', height: '3px', background: 'var(--naranja-corp)', margin: '0 auto 20px'}}></div>
           <div className="centered-btn-box">
@@ -184,7 +255,7 @@ function App() {
         </div>
 
         {/* CONTACTO */}
-        <section id="contacto">
+        <section id="contacto" className="reveal">
           <h2 className="titulo-seccion">Contacto</h2>
           <div className="contacto-grid">
             {/* Aquí también podrías conectar Firebase si quisieras, de momento lo dejamos como mailto según pediste */}
@@ -201,13 +272,13 @@ function App() {
                 <p><i className="fas fa-envelope"></i> <span>iscan@iscanlp.es</span></p>
               </div>
               <div className="mapa-box">
-                <iframe 
-                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3519.349!2d-15.43!3d28.11!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMjjCsDA2JzM2LjAiTiAxNcKwMjUnNDguMCJX!5e0!3m2!1ses!2ses!4v1620000000000" 
-                  width="100%" 
-                  height="100%" 
-                  style={{border:0}} 
-                  allowFullScreen="" 
-                  loading="lazy" 
+                <iframe
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3519.349!2d-15.43!3d28.11!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMjjCsDA2JzM2LjAiTiAxNcKwMjUnNDguMCJX!5e0!3m2!1ses!2ses!4v1620000000000"
+                  width="100%"
+                  height="100%"
+                  style={{border:0}}
+                  allowFullScreen=""
+                  loading="lazy"
                   title="Ubicación Iscan">
                 </iframe>
               </div>

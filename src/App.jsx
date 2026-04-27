@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './App.css';
+// 1. IMPORTAMOS FIREBASE (Asegúrate de haber creado el archivo firebase.js)
 import { db } from './firebase';
 import { collection, addDoc } from "firebase/firestore";
 
@@ -44,6 +45,11 @@ function CountUp({ end, suffix = '', duration = 1400 }) {
 
   useEffect(() => {
     if (!ref.current) return;
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduce) {
+      setVal(end);
+      return;
+    }
     const io = new IntersectionObserver((entries) => {
       entries.forEach((e) => {
         if (e.isIntersecting && !started.current) {
@@ -67,14 +73,18 @@ function CountUp({ end, suffix = '', duration = 1400 }) {
 }
 
 function App() {
+  // Lógica para el acordeón de servicios
   const [activeIdx, setActiveIdx] = useState(null);
   const toggleAcc = (idx) => setActiveIdx(activeIdx === idx ? null : idx);
 
   useReveal();
   useNavScrolled();
 
+  // --- LÓGICA DE FIREBASE ---
+  // Estado para capturar todos los campos del formulario
   const [formData, setFormData] = useState({});
 
+  // Función para capturar los cambios en los inputs
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -82,21 +92,24 @@ function App() {
     });
   };
 
+  // Función para enviar los datos a Firebase
   const manejarEnvioPresupuesto = async (e) => {
-    e.preventDefault();
+    e.preventDefault(); // Evita que la página se recargue
     try {
+      // Guardamos en la colección "presupuestos"
       await addDoc(collection(db, "presupuestos"), {
         ...formData,
-        fechaEnvio: new Date().toLocaleString()
+        fechaEnvio: new Date().toLocaleString() // Añadimos fecha automáticamente
       });
       alert("¡Presupuesto enviado con éxito! Nos pondremos en contacto pronto.");
-      e.target.reset();
-      setFormData({});
+      e.target.reset(); // Limpia el formulario
+      setFormData({}); // Limpia el estado
     } catch (error) {
       console.error("Error al enviar:", error);
       alert("Hubo un error al enviar. Por favor, inténtelo de nuevo.");
     }
   };
+  // --- FIN LÓGICA FIREBASE ---
 
   const servicios = [
     { t: "Registro de la Contabilidad", c: "Registro de la contabilidad con el más avanzado sistema informático, específico para nuestra gestión, que nos permite informar periódicamente a los /as Propietarios /as de las operaciones realizadas durante ese período y donde detallamos morosos (si los hubiera), ingresos, gastos y saldos." },
@@ -114,10 +127,10 @@ function App() {
 
   return (
     <div className="App">
-      <a href="https://wa.me/34615864610" className="whatsapp-float" target="_blank" rel="noreferrer" aria-label="Contactar por WhatsApp">
-        <i className="fab fa-whatsapp"></i>
-      </a>
+      {/* WHATSAPP */}
+      <a href="https://wa.me/34615864610" className="whatsapp-float" target="_blank" rel="noreferrer" aria-label="Contactar por WhatsApp"><i className="fab fa-whatsapp"></i></a>
 
+      {/* NAVEGACIÓN */}
       <nav>
         <div className="logo-box" onClick={() => window.location.href='#inicio'}>
           <img src="/IMAGEN1.jpg" alt="Logo ISE" />
@@ -132,6 +145,7 @@ function App() {
         </div>
       </nav>
 
+      {/* HERO */}
       <header id="inicio" className="hero">
         <h1>Iscan Servicio Edificios</h1>
         <p>Administración de Fincas • 35 Años de Excelencia Profesional</p>
@@ -139,6 +153,7 @@ function App() {
       </header>
 
       <div className="container">
+        {/* NOSOTROS */}
         <section id="nosotros" className="reveal">
           <h2 className="titulo-seccion">Quiénes Somos</h2>
           <p>Treinta y cinco años de experiencia en la gestión de las Comunidades de Propietarios de Canarias avalan una calidad de servicios que muy pocos podrán ofrecerle, realizando con éxito cuanto nos proponemos para asegurar la buena convivencia en las Comunidades que administramos y la óptima conservación de los inmuebles y sus elementos.</p>
@@ -146,18 +161,21 @@ function App() {
           <p>Administradores de Fincas Colegiados, con la garantía para el Comunero al amparo de un Colegio Profesional y con cualquier riesgo cubierto por una póliza de seguro de responsabilidad profesional que garantiza hasta <b>700.000 €</b> por daños y perjuicios que pudiéramos ocasionar durante el ejercicio de nuestra profesión. Graduados en Administración Inmobiliaria, asociados a la CEPI nos mantenemos en una continua formación que repercute en beneficio de nuestros Administrados y sus Intereses.</p>
         </section>
 
+        {/* FRANJA INDICADORES */}
         <div className="franja-discreta reveal">
           <div className="stat-discreta"><i className="fas fa-award"></i><h4><CountUp end={35} suffix="+" /></h4><p>Años de trayectoria</p></div>
           <div className="stat-discreta"><i className="fas fa-shield-alt"></i><h4><CountUp end={700} suffix="k€" /></h4><p>Seguro Resp. Civil</p></div>
           <div className="stat-discreta"><i className="fas fa-user-check"></i><h4>24/7</h4><p>Despacho Virtual</p></div>
         </div>
 
+        {/* EXCELENCIA */}
         <div className="excelencia-grid">
           <div className="tarjeta-excelencia reveal reveal-delay-1"><i className="fas fa-handshake"></i><h3>Transparencia</h3><p>Cuentas claras y auditables en tiempo real desde su despacho virtual 24/7.</p></div>
           <div className="tarjeta-excelencia reveal reveal-delay-2"><i className="fas fa-tools"></i><h3>Rapidez</h3><p>Atención inmediata a averías con proveedores técnicos homologados de total confianza.</p></div>
           <div className="tarjeta-excelencia reveal reveal-delay-3"><i className="fas fa-users"></i><h3>Mediación</h3><p>Expertos en resolución de conflictos para garantizar una convivencia armoniosa.</p></div>
         </div>
 
+        {/* SERVICIOS */}
         <section id="servicios" className="reveal">
           <h2 className="titulo-seccion">Nuestros Servicios</h2>
           <div className="servicios-container">
@@ -174,8 +192,10 @@ function App() {
           </div>
         </section>
 
+        {/* PRESUPUESTO */}
         <section id="solicitar" className="reveal">
           <h2 className="titulo-seccion">Solicitar Presupuesto</h2>
+          {/* CAMBIO: Quitamos action mailto y añadimos onSubmit */}
           <form onSubmit={manejarEnvioPresupuesto} className="form-presupuesto">
             <div className="subtitulo-form">1. DATOS DE CONTACTO</div>
             <input type="text" placeholder="Nombre completo" className="full" name="Nombre" onChange={handleChange} required/>
@@ -217,6 +237,7 @@ function App() {
           </form>
         </section>
 
+        {/* DESPACHO VIRTUAL */}
         <div id="despacho" className="reveal" style={{textAlign: 'center', marginBottom: '100px'}}>
           <h2 className="titulo-seccion" style={{borderBottom:'none', marginBottom: '5px'}}>ACCESO A DESPACHO VIRTUAL</h2>
           <div style={{width: '50px', height: '3px', background: 'var(--naranja-corp)', margin: '0 auto 20px'}}></div>
@@ -233,9 +254,11 @@ function App() {
           </div>
         </div>
 
+        {/* CONTACTO */}
         <section id="contacto" className="reveal">
           <h2 className="titulo-seccion">Contacto</h2>
           <div className="contacto-grid">
+            {/* Aquí también podrías conectar Firebase si quisieras, de momento lo dejamos como mailto según pediste */}
             <form action="mailto:iscan@iscanlp.es" method="post" encType="text/plain" style={{display:'flex', flexDirection:'column', gap:'10px'}}>
               <input type="text" placeholder="Nombre completo" name="Nombre"/>
               <input type="email" placeholder="Email" name="Email"/>
@@ -249,7 +272,15 @@ function App() {
                 <p><i className="fas fa-envelope"></i> <span>iscan@iscanlp.es</span></p>
               </div>
               <div className="mapa-box">
-                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3519.349692881792!2d-15.428385223631551!3d28.105364107452656!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xc40957597198539%3A0xe54911d3326759!2sC.%20Nu%C3%B1ez%20de%20Balboa%2C%201%2C%2035012%20Las%20Palmas%20de%20Gran%20Canaria%2C%20Las%20Palmas!5e0!3m2!1ses!2ses!4v1709564850000!5m2!1ses!2ses" width="100%" height="100%" style={{border:0}} allowFullScreen="" loading="lazy" title="Ubicación Iscan"></iframe>
+                <iframe
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3519.349!2d-15.43!3d28.11!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMjjCsDA2JzM2LjAiTiAxNcKwMjUnNDguMCJX!5e0!3m2!1ses!2ses!4v1620000000000"
+                  width="100%"
+                  height="100%"
+                  style={{border:0}}
+                  allowFullScreen=""
+                  loading="lazy"
+                  title="Ubicación Iscan">
+                </iframe>
               </div>
             </div>
           </div>

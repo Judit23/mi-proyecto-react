@@ -8,8 +8,8 @@ const firebaseConfig = {
   projectId: "presupuestoedificios",
   storageBucket: "presupuestoedificios.firebasestorage.app",
   messagingSenderId: "31623218204",
-  appId: "TU_APP_ID_QUE_SALE_MAS_ABAJO" // Copia el appId completo de tu pantalla
-};
+  appId: "1:316023218204:web:658a9da8f3d889e3577fd9"
+}; 
 
 // Inicializamos Firebase
 const app = initializeApp(firebaseConfig);

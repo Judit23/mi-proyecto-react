@@ -1,7 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './App.css';
-import { db } from './firebase';
-import { collection, addDoc } from "firebase/firestore";
 
 function useReveal() {
   useEffect(() => {
@@ -87,7 +85,7 @@ function App() {
     }));
   };
 
-  // --- ENVÍO DE PRESUPUESTO DIRECTO POR MAILTO ROBUSTO ---
+  // --- ENVÍO DE PRESUPUESTO DIRECTO POR MAILTO ---
   const manejarEnvioPresupuesto = (e) => {
     e.preventDefault(); 
     

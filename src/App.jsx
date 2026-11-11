@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './App.css';
-// Mantenemos las importaciones de Firebase intactas por estructura, aunque ya no se usen para el presupuesto
 import { db } from './firebase';
 import { collection, addDoc } from "firebase/firestore";
 
@@ -73,7 +72,6 @@ function CountUp({ end, suffix = '', duration = 1400 }) {
 }
 
 function App() {
-  // Lógica para el acordeón de servicios
   const [activeIdx, setActiveIdx] = useState(null);
   const toggleAcc = (idx) => setActiveIdx(activeIdx === idx ? null : idx);
 
@@ -83,43 +81,41 @@ function App() {
   const [formData, setFormData] = useState({});
 
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
+    setFormData((prev) => ({
+      ...prev,
       [e.target.name]: e.target.value
-    });
+    }));
   };
 
-  // --- LÓGICA CORREGIDA: ENVÍO DE PRESUPUESTO POR CORREO (MAILTO) ---
+  // --- ENVÍO DE PRESUPUESTO DIRECTO POR MAILTO ROBUSTO ---
   const manejarEnvioPresupuesto = (e) => {
     e.preventDefault(); 
     
-    const nombre = formData.Nombre || "No especificado";
+    const nombre = formData.Nombre || "Cliente";
     
-    let cuerpoMensaje = "Solicitud de Presupuesto:%0D%0A%0D%0A";
+    let cuerpoMensaje = "SOLICITUD DE PRESUPUESTO - ISEAN%0D%0A%0D%0A";
     for (const [key, value] of Object.entries(formData)) {
-      cuerpoMensaje += `${key}: ${value}%0D%0A`;
+      if (value) {
+        cuerpoMensaje += `${key}: ${value}%0D%0A`;
+      }
     }
 
-    // Abre el cliente de correo predeterminado del usuario apuntando a iscan@iscanlp.es
-    window.location.href = `mailto:iscan@iscanlp.es?subject=Solicitud de Presupuesto de ${nombre}&body=${cuerpoMensaje}`;
+    window.location.href = `mailto:iscan@iscanlp.es?subject=Solicitud de Presupuesto de ${encodeURIComponent(nombre)}&body=${cuerpoMensaje}`;
     
-    alert("¡Solicitud de presupuesto preparada! Se ha abierto su gestor de correo para completar el envío a iscan@iscanlp.es.");
+    alert("¡Solicitud de presupuesto preparada! Se ha abierto su gestor de correo.");
     e.target.reset();
     setFormData({});
   };
 
-  // --- FUNCIÓN PARA EL FORMULARIO DE CONTACTO ---
   const manejarEnvioContacto = (e) => {
     e.preventDefault();
     const nombre = e.target.Nombre.value;
     const email = e.target.Email.value;
     const consulta = e.target.Consulta.value;
 
-    // Abrir el cliente de correo
-    window.location.href = `mailto:iscan@iscanlp.es?subject=Consulta de ${nombre}&body=Nombre: ${nombre}%0D%0AEmail: ${email}%0D%0AMensaje: ${consulta}`;
+    window.location.href = `mailto:iscan@iscanlp.es?subject=Consulta de ${encodeURIComponent(nombre)}&body=Nombre: ${encodeURIComponent(nombre)}%0D%0AEmail: ${encodeURIComponent(email)}%0D%0AMensaje: ${encodeURIComponent(consulta)}`;
     
-    // Mostrar mensaje de confirmación
-    alert("¡Mensaje de consulta preparado! Se ha abierto su gestor de correo para completar el envío a iscan@iscanlp.es.");
+    alert("¡Mensaje de consulta preparado!");
     e.target.reset();
   };
 
@@ -139,10 +135,8 @@ function App() {
 
   return (
     <div className="App">
-      {/* WHATSAPP */}
       <a href="https://wa.me/34615864610" className="whatsapp-float" target="_blank" rel="noreferrer" aria-label="Contactar por WhatsApp"><i className="fab fa-whatsapp"></i></a>
 
-      {/* NAVEGACIÓN */}
       <nav>
         <div className="logo-box" onClick={() => window.location.href='#inicio'}>
           <img src="/IMAGEN1.jpg" alt="Logo ISE" />
@@ -157,7 +151,6 @@ function App() {
         </div>
       </nav>
 
-      {/* HERO */}
       <header id="inicio" className="hero">
         <h1>Iscan Servicio Edificios</h1>
         <p>Administración de Fincas • 35 Años de Excelencia Profesional</p>
@@ -165,7 +158,6 @@ function App() {
       </header>
 
       <div className="container">
-        {/* NOSOTROS */}
         <section id="nosotros" className="reveal">
           <h2 className="titulo-seccion">Quiénes Somos</h2>
           <p>Treinta y cinco años de experiencia en la gestión de las Comunidades de Propietarios de Canarias avalan una calidad de servicios que muy pocos podrán ofrecerle, realizando con éxito cuanto nos proponemos para asegurar la buena convivencia en las Comunidades que administramos y la óptima conservación de los inmuebles y sus elementos.</p>
@@ -173,21 +165,18 @@ function App() {
           <p>Administradores de Fincas Colegiados, con la garantía para el Comunero al amparo de un Colegio Profesional y con cualquier riesgo cubierto por una póliza de seguro de responsabilidad profesional que garantiza hasta <b>700.000 €</b> por daños y perjuicios que pudiéramos ocasionar durante el ejercicio de nuestra profesión. Graduados en Administración Inmobiliaria, asociados a la CEPI nos mantenemos en una continua formación que repercute en beneficio de nuestros Administrados y sus Intereses.</p>
         </section>
 
-        {/* FRANJA INDICADORES */}
         <div className="franja-discreta reveal">
           <div className="stat-discreta"><i className="fas fa-award"></i><h4><CountUp end={35} suffix="+" /></h4><p>Años de trayectoria</p></div>
           <div className="stat-discreta"><i className="fas fa-shield-alt"></i><h4><CountUp end={700} suffix="k€" /></h4><p>Seguro Resp. Civil</p></div>
           <div className="stat-discreta"><i className="fas fa-user-check"></i><h4>24/7</h4><p>Despacho Virtual</p></div>
         </div>
 
-        {/* EXCELENCIA */}
         <div className="excelencia-grid">
           <div className="tarjeta-excelencia reveal reveal-delay-1"><i className="fas fa-handshake"></i><h3>Transparencia</h3><p>Cuentas claras y auditables en tiempo real desde su despacho virtual 24/7.</p></div>
           <div className="tarjeta-excelencia reveal reveal-delay-2"><i className="fas fa-tools"></i><h3>Rapidez</h3><p>Atención inmediata a averías con proveedores técnicos homologados de total confianza.</p></div>
           <div className="tarjeta-excelencia reveal reveal-delay-3"><i className="fas fa-users"></i><h3>Mediación</h3><p>Expertos en resolución de conflictos para garantizar una convivencia armoniosa.</p></div>
         </div>
 
-        {/* SERVICIOS */}
         <section id="servicios" className="reveal">
           <h2 className="titulo-seccion">Nuestros Servicios</h2>
           <div className="servicios-container">
@@ -204,7 +193,6 @@ function App() {
           </div>
         </section>
 
-        {/* PRESUPUESTO - CORREGIDO A MAILTO */}
         <section id="solicitar" className="reveal">
           <h2 className="titulo-seccion">Solicitar Presupuesto</h2>
           <form onSubmit={manejarEnvioPresupuesto} className="form-presupuesto">
@@ -248,7 +236,6 @@ function App() {
           </form>
         </section>
 
-        {/* DESPACHO VIRTUAL */}
         <div id="despacho" className="reveal" style={{textAlign: 'center', marginBottom: '100px'}}>
           <h2 className="titulo-seccion" style={{borderBottom:'none', marginBottom: '5px'}}>ACCESO A DESPACHO VIRTUAL</h2>
           <div style={{width: '50px', height: '3px', background: 'var(--naranja-corp)', margin: '0 auto 20px'}}></div>
@@ -265,7 +252,6 @@ function App() {
           </div>
         </div>
 
-        {/* CONTACTO */}
         <section id="contacto" className="reveal">
           <h2 className="titulo-seccion">Contacto</h2>
           <div className="contacto-grid">

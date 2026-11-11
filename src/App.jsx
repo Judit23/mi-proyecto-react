@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './App.css';
-// 1. IMPORTAMOS FIREBASE (Asegúrate de haber creado el archivo firebase.js)
+// Ya no es estrictamente necesario importar Firebase aquí si se quita la base de datos, 
+// pero dejamos los imports intactos o adaptados para no borrar nada de tu estructura original.
 import { db } from './firebase';
 import { collection, addDoc } from "firebase/firestore";
 
@@ -80,11 +81,8 @@ function App() {
   useReveal();
   useNavScrolled();
 
-  // --- LÓGICA DE FIREBASE ---
-  // Estado para capturar todos los campos del formulario
   const [formData, setFormData] = useState({});
 
-  // Función para capturar los cambios en los inputs
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -92,24 +90,41 @@ function App() {
     });
   };
 
-  // Función para enviar los datos a Firebase
-  const manejarEnvioPresupuesto = async (e) => {
-    e.preventDefault(); // Evita que la página se recargue
-    try {
-      // Guardamos en la colección "presupuestos"
-      await addDoc(collection(db, "presupuestos"), {
-        ...formData,
-        fechaEnvio: new Date().toLocaleString() // Añadimos fecha automáticamente
-      });
-      alert("¡Presupuesto enviado con éxito! Nos pondremos en contacto pronto.");
-      e.target.reset(); // Limpia el formulario
-      setFormData({}); // Limpia el estado
-    } catch (error) {
-      console.error("Error al enviar:", error);
-      alert("Hubo un error al enviar. Por favor, inténtelo de nuevo.");
+  // --- MODIFICADO: ENVÍO DE PRESUPUESTO POR CORREO (mailto) ---
+  const manejarEnvioPresupuesto = (e) => {
+    e.preventDefault(); 
+    
+    // Extraer los datos recopilados en el formulario para armar el cuerpo del mensaje
+    const nombre = formData.Nombre || "No especificado";
+    
+    // Crear un cuerpo de mensaje organizado con todos los campos rellenados
+    let cuerpoMensaje = "Solicitud de Presupuesto:%0D%0A%0D%0A";
+    for (const [key, value] of Object.entries(formData)) {
+      cuerpoMensaje += `${key}: ${value}%0D%0A`;
     }
+
+    // Abrir el cliente de correo predeterminado del usuario apuntando a iscan@iscanlp.es
+    window.location.href = `mailto:iscan@iscanlp.es?subject=Solicitud de Presupuesto de ${nombre}&body=${cuerpoMensaje}`;
+    
+    alert("¡Solicitud de presupuesto preparada! Se ha abierto su gestor de correo para completar el envío a iscan@iscanlp.es.");
+    e.target.reset();
+    setFormData({});
   };
-  // --- FIN LÓGICA FIREBASE ---
+
+  // --- FUNCIÓN PARA EL FORMULARIO DE CONTACTO ---
+  const manejarEnvioContacto = (e) => {
+    e.preventDefault();
+    const nombre = e.target.Nombre.value;
+    const email = e.target.Email.value;
+    const consulta = e.target.Consulta.value;
+
+    // Abrir el cliente de correo
+    window.location.href = `mailto:iscan@iscanlp.es?subject=Consulta de ${nombre}&body=Nombre: ${nombre}%0D%0AEmail: ${email}%0D%0AMensaje: ${consulta}`;
+    
+    // Mostrar mensaje de confirmación
+    alert("¡Mensaje de consulta preparado! Se ha abierto su gestor de correo para completar el envío a iscan@iscanlp.es.");
+    e.target.reset();
+  };
 
   const servicios = [
     { t: "Registro de la Contabilidad", c: "Registro de la contabilidad con el más avanzado sistema informático, específico para nuestra gestión, que nos permite informar periódicamente a los /as Propietarios /as de las operaciones realizadas durante ese período y donde detallamos morosos (si los hubiera), ingresos, gastos y saldos." },
@@ -192,10 +207,9 @@ function App() {
           </div>
         </section>
 
-        {/* PRESUPUESTO */}
+        {/* PRESUPUESTO - ENVIADO POR CORREO */}
         <section id="solicitar" className="reveal">
           <h2 className="titulo-seccion">Solicitar Presupuesto</h2>
-          {/* CAMBIO: Quitamos action mailto y añadimos onSubmit */}
           <form onSubmit={manejarEnvioPresupuesto} className="form-presupuesto">
             <div className="subtitulo-form">1. DATOS DE CONTACTO</div>
             <input type="text" placeholder="Nombre completo" className="full" name="Nombre" onChange={handleChange} required/>
@@ -258,11 +272,10 @@ function App() {
         <section id="contacto" className="reveal">
           <h2 className="titulo-seccion">Contacto</h2>
           <div className="contacto-grid">
-            {/* Aquí también podrías conectar Firebase si quisieras, de momento lo dejamos como mailto según pediste */}
-            <form action="mailto:iscan@iscanlp.es" method="post" encType="text/plain" style={{display:'flex', flexDirection:'column', gap:'10px'}}>
-              <input type="text" placeholder="Nombre completo" name="Nombre"/>
-              <input type="email" placeholder="Email" name="Email"/>
-              <textarea placeholder="Su consulta..." name="Consulta" style={{height:'120px'}}></textarea>
+            <form onSubmit={manejarEnvioContacto} style={{display:'flex', flexDirection:'column', gap:'10px'}}>
+              <input type="text" placeholder="Nombre completo" name="Nombre" required />
+              <input type="email" placeholder="Email" name="Email" required />
+              <textarea placeholder="Su consulta..." name="Consulta" style={{height:'120px'}} required></textarea>
               <button type="submit" className="btn-portal-solido">ENVIAR CONSULTA</button>
             </form>
             <div className="info-columna">

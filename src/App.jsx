@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './App.css';
-// Ya no es estrictamente necesario importar Firebase aquí si se quita la base de datos, 
-// pero dejamos los imports intactos o adaptados para no borrar nada de tu estructura original.
+// Mantenemos las importaciones de Firebase intactas por estructura, aunque ya no se usen para el presupuesto
 import { db } from './firebase';
 import { collection, addDoc } from "firebase/firestore";
 
@@ -90,20 +89,18 @@ function App() {
     });
   };
 
-  // --- MODIFICADO: ENVÍO DE PRESUPUESTO POR CORREO (mailto) ---
+  // --- LÓGICA CORREGIDA: ENVÍO DE PRESUPUESTO POR CORREO (MAILTO) ---
   const manejarEnvioPresupuesto = (e) => {
     e.preventDefault(); 
     
-    // Extraer los datos recopilados en el formulario para armar el cuerpo del mensaje
     const nombre = formData.Nombre || "No especificado";
     
-    // Crear un cuerpo de mensaje organizado con todos los campos rellenados
     let cuerpoMensaje = "Solicitud de Presupuesto:%0D%0A%0D%0A";
     for (const [key, value] of Object.entries(formData)) {
       cuerpoMensaje += `${key}: ${value}%0D%0A`;
     }
 
-    // Abrir el cliente de correo predeterminado del usuario apuntando a iscan@iscanlp.es
+    // Abre el cliente de correo predeterminado del usuario apuntando a iscan@iscanlp.es
     window.location.href = `mailto:iscan@iscanlp.es?subject=Solicitud de Presupuesto de ${nombre}&body=${cuerpoMensaje}`;
     
     alert("¡Solicitud de presupuesto preparada! Se ha abierto su gestor de correo para completar el envío a iscan@iscanlp.es.");
@@ -207,7 +204,7 @@ function App() {
           </div>
         </section>
 
-        {/* PRESUPUESTO - ENVIADO POR CORREO */}
+        {/* PRESUPUESTO - CORREGIDO A MAILTO */}
         <section id="solicitar" className="reveal">
           <h2 className="titulo-seccion">Solicitar Presupuesto</h2>
           <form onSubmit={manejarEnvioPresupuesto} className="form-presupuesto">

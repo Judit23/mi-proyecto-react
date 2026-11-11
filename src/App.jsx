@@ -85,21 +85,16 @@ function App() {
     }));
   };
 
-  // --- ENVÍO DE PRESUPUESTO DIRECTO POR MAILTO ---
   const manejarEnvioPresupuesto = (e) => {
     e.preventDefault(); 
-    
     const nombre = formData.Nombre || "Cliente";
-    
     let cuerpoMensaje = "SOLICITUD DE PRESUPUESTO - ISEAN%0D%0A%0D%0A";
     for (const [key, value] of Object.entries(formData)) {
       if (value) {
         cuerpoMensaje += `${key}: ${value}%0D%0A`;
       }
     }
-
     window.location.href = `mailto:iscan@iscanlp.es?subject=Solicitud de Presupuesto de ${encodeURIComponent(nombre)}&body=${cuerpoMensaje}`;
-    
     alert("¡Solicitud de presupuesto preparada! Se ha abierto su gestor de correo.");
     e.target.reset();
     setFormData({});
@@ -110,9 +105,7 @@ function App() {
     const nombre = e.target.Nombre.value;
     const email = e.target.Email.value;
     const consulta = e.target.Consulta.value;
-
     window.location.href = `mailto:iscan@iscanlp.es?subject=Consulta de ${encodeURIComponent(nombre)}&body=Nombre: ${encodeURIComponent(nombre)}%0D%0AEmail: ${encodeURIComponent(email)}%0D%0AMensaje: ${encodeURIComponent(consulta)}`;
-    
     alert("¡Mensaje de consulta preparado!");
     e.target.reset();
   };
